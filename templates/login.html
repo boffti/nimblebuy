@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>SFV Veggies - Login/Register</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}css/ionicons.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.timepicker.css') }}">
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        html,
+        body {
+            height: 100vh !important;
+        }
+
+        .full-height {
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body class="goto-here">
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('about_page')}}">SFV - Veggies</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="material-icons">menu</span> Menu
+            </button>
+
+            <div class="collapse navbar-collapse" id="ftco-nav">
+                <ul class="navbar-nav ml-auto">
+                    {% if session['user'] %}
+                    <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Shop</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a href="{{ url_for('about_page') }}" class="nav-link">About</a></li>
+                    <li class="nav-item active"><a href="{{ url_for('login_page') }}"
+                            class="nav-link">Login/Register</a></li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="hero-wrap hero-bread full-height"
+        style="background-image: url({{url_for('static', filename='images/bg_1.jpg')}});">
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-center justify-content-center">
+                <div class="col-md-9 ftco-animate text-center">
+                    <h3 class="mb-0 bread">Welcome SFV Resident!</h3>
+
+
+
+                    <div class="align-items-center">
+                        <div class="row justify-content-center mt-5">
+                            <div class="col-lg-6 col-md-12 col-md-offset-3">
+                                <div class="panel panel-login p-2" style="background-color: white;">
+                                    <div class="panel-heading">
+                                        <div class="row d-flex justify-content-around ml-5 mr-5">
+                                            <div class="col-xs-6">
+                                                <a href="#" class="active" id="login-form-link">Login</a>
+                                            </div>
+                                            |
+                                            <div class="col-xs-6" style="padding-left: auto;">
+                                                <a href="#" id="register-form-link">Register</a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                    <div class="panel-body m-3">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <form id="login-form" action="/login" method="post" role="form"
+                                                    style="display: block;">
+                                                    <div class="form-group">
+                                                        <input type="text" name="apt" id="apt" tabindex="1"
+                                                            class="form-control" placeholder="SFV Apartment Number" value="">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="password" name="password" id="password"
+                                                            tabindex="2" class="form-control" placeholder="Password">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="row justify-content-center">
+                                                            <div class="col-sm-6">
+                                                                <input type="submit" name="login-submit"
+                                                                    id="login-submit" tabindex="4"
+                                                                    class="form-control btn btn-login" value="Log In">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="text-center">
+                                                                    <a href="#" tabindex="5"
+                                                                        class="forgot-password">Forgot
+                                                                        Password?</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <form id="register-form" action="/register" method="post" role="form"
+                                                    style="display: none;">
+                                                    <div class="form-group">
+                                                        <input type="text" name="apt" id="apt" tabindex="1"
+                                                            class="form-control" placeholder="SFV Apartment Number" value="">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" name="name" id="name" tabindex="1"
+                                                            class="form-control" placeholder="Full Name" value="">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" name="phone" id="phone" tabindex="1"
+                                                            class="form-control" placeholder="Phone Number" value="">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <input type="password" name="password" id="password"
+                                                            tabindex="2" class="form-control" placeholder="Password">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="row justify-content-center">
+                                                            <div class="col-sm-6">
+                                                                <input type="submit" name="register-submit"
+                                                                    id="register-submit" tabindex="4"
+                                                                    class="form-control btn btn-register"
+                                                                    value="Register Now">
+                                                            </div>
+                                                        </div>
+                                                        <p style="color: rgb(54, 54, 54); margin-top:5px; display:block;">* Please use a simple/expendable password as we have not spent a lot of time securing this app.</p>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- loader -->
+    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
+            <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
+            <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10"
+                stroke="#F96D00" /></svg></div>
+
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.easing.1.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.stellar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        $(function () {
+
+            $('#login-form-link').click(function (e) {
+                $("#login-form").delay(100).fadeIn(100);
+                $("#register-form").fadeOut(100);
+                $('#register-form-link').removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#register-form-link').click(function (e) {
+                $("#register-form").delay(100).fadeIn(100);
+                $("#login-form").fadeOut(100);
+                $('#login-form-link').removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

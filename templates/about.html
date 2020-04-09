@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>SFV Veggies - About</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.timepicker.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="goto-here">
+    <div class="py-1 bg-primary">
+        <div class="container">
+            <div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
+                <div class="col-lg-12 d-block">
+                    <div class="row d-flex">
+                        <div class="col-md pr-4 d-flex topper align-items-center">
+                            <div class="icon mr-2 d-flex justify-content-center align-items-center"><span
+                                    class="material-icons">
+                                    phone
+                                </span></span></div>
+                            <span class="text">+91 9448032255</span>
+                        </div>
+                        <div class="col-md pr-4 d-flex topper align-items-center">
+                            <div class="icon mr-2 d-flex justify-content-center align-items-center"><span
+                                    class="material-icons">
+                                    mail
+                                </span></div>
+                            <span class="text">kalpuraju1990@gmail.com</span>
+                        </div>
+                        <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right">
+                            <span class="text">1 - 2 days delivery</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('about_page')}}">SFV - Veggies</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="material-icons">menu</span> Menu
+            </button>
+            <div class="collapse navbar-collapse" id="ftco-nav">
+                <ul class="navbar-nav ml-auto">
+                    {% if session['user'] %}
+                    <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Shop</a></li>
+                    {% endif %}
+                    <li class="nav-item active"><a href="{{ url_for('about_page') }}" class="nav-link">About</a></li>
+                    {% if session['user'] %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">{{ session['user']['fname'] }}</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown04">
+                            <a class="dropdown-item" href="{{ url_for('logout_user') }}">Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item"><a href="{{ url_for('login_page') }}" class="nav-link">Login/Register</a></li>
+                    {% endif %}
+                    {% if session['user'] %}
+                    <li class="nav-item cta cta-colored"><a href="{{ url_for('checkout') }}" class="nav-link"><span
+                                class="material-icons">
+                                shopping_cart
+                            </span>[{{ session['cart_items'] | length }}]</a></li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- END nav -->
+
+    <!-- <div class="hero-wrap hero-bread" style="background-image: url({{ url_for('static', filename='images/bg_1.jpg') }});">
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-center justify-content-center">
+                <div class="col-md-9 ftco-animate text-center">
+                    <h1 class="mb-0 bread">About us</h1>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5 p-md-5 img img-2 d-flex justify-content-center align-items-center"
+                    style="background-image: url({{ url_for('static', filename='images/about.jpg') }});">
+                </div>
+                <div class="col-md-7 py-5 wrap-about pb-md-5 ftco-animate">
+                    <div class="heading-section-bold mb-4 mt-md-5">
+                        <div class="ml-md-0">
+                            <h2 class="mb-4">Welcome to SFV - Veggies</h2>
+                        </div>
+                    </div>
+                    <div class="pb-md-5">
+                        <p>This is a small endevor by the Melkots of SFV 1122 to bring you fresh quality produce
+                            directly from the producer.</p>
+                        <p>Let us support small producers by purchasing thier fresh produce. Quality Guranteed.</p>
+                        {% if session['user'] %}
+                        <h5>Welcome {{ session['user']['fname'] }}</h5>
+                        <p><a href="{{ url_for('index') }}" class="btn btn-primary">Shop now</a></p>
+                        {% else %}
+                        <p>Login or Register now and start purchasing!</p>
+                        <p><a href="{{ url_for('index') }}" class="btn btn-secondary">Login/Register</a></p>
+                        {% endif %}
+                        <p>Order now and get your veggies on <strong>{{ date }}</strong></p>
+                        {% if isOrderSuccess %}
+                        <h5>Your order was placed successfully!</h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section ftco-no-pt ftco-no-pb py-5 bg-light">
+        <div class="container py-4">
+        </div>
+    </section>
+
+    <section class="ftco-section ftco-counter img" id="section-counter"
+        style="background-image: url({{ url_for('static', filename='images/bg_3.jpg') }});">
+        <div class="container">
+            <div class="row justify-content-center py-5">
+                <div class="row text-center">
+                    <div class="col-6 col-md-6 d-flex justify-content-center counter-wrap ftco-animate">
+                        <div class="block-18 text-center">
+                            <div class="text">
+                                <strong class="number" data-number="55">0</strong>
+                                <span>Happy Customers</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-6 d-flex justify-content-center counter-wrap ftco-animate">
+                        <div class="block-18 text-center">
+                            <div class="text">
+                                <strong class="number" data-number="17">0</strong>
+                                <span>Veggies & Fruits</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section testimony-section">
+        <div class="container">
+            <div class="row justify-content-center mb-5 pb-3">
+                <div class="col-md-7 heading-section ftco-animate text-center">
+                    <span class="subheading">Testimony</span>
+                    <h2 class="mb-4">Our satisfied customer have this to say...</h2>
+                </div>
+            </div>
+            <div class="row ftco-animate">
+                <div class="col-md-12">
+                    <div class="carousel-testimony owl-carousel">
+                        <div class="item">
+                            <div class="testimony-wrap p-4 pb-5">
+                                <div class="user-img mb-5">
+                                    <span class="material-icons quote d-flex align-items-center justify-content-center">
+                                        format_quote
+                                    </span>
+                                </div>
+                                <div class="text text-center">
+                                    <p class="mb-5 pl-4 line">Fresh vegetables and price seemed very genuine 👍👍👍 keep
+                                        up the good work. Greens should be in 100gms ratio. 1/2 kg or 1kg is too much
+                                    </p>
+                                    <p class="name">Rajan Mittal</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimony-wrap p-4 pb-5">
+                                <div class="user-img mb-5">
+                                    <span class="material-icons quote d-flex align-items-center justify-content-center">
+                                        format_quote
+                                    </span>
+                                </div>
+                                <div class="text text-center">
+                                    <p class="mb-5 pl-4 line">Excellent quality of veggies. Thank you very much Kalpana!
+                                    </p>
+                                    <p class="name">Lakshmi Veeramani</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimony-wrap p-4 pb-5">
+                                <div class="user-img mb-5">
+                                    <span class="material-icons quote d-flex align-items-center justify-content-center">
+                                        format_quote
+                                    </span>
+                                </div>
+                                <div class="text text-center">
+                                    <p class="mb-5 pl-4 line">Yes all veggies are very fresh and greens also..thanks for
+                                        the effort taken👏🏻👏🏻</p>
+                                    <p class="name">Jyothi Pradeep</p>
+                                    <!-- <span class="position">APT</span> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section bg-light">
+        <div class="container">
+            <div class="row no-gutters ftco-services">
+                <div class="col-lg-4 text-center d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services mb-md-0 mb-4">
+                        <div class="icon bg-color-1 active d-flex justify-content-center align-items-center mb-2">
+                            <span class="material-icons">
+                                local_shipping
+                            </span>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="heading">Free Shipping for SFV residents</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services mb-md-0 mb-4">
+                        <div class="icon bg-color-2 d-flex justify-content-center align-items-center mb-2">
+                            <span class="material-icons">
+                                local_dining
+                            </span>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="heading">Always Fresh</h3>
+                            <span>Product well packaged</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services mb-md-0 mb-4">
+                        <div class="icon bg-color-3 d-flex justify-content-center align-items-center mb-2">
+                            <span class="material-icons">
+                                thumb_up_alt
+                            </span>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="heading">Superior Quality</h3>
+                            <span>Quality Products</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="ftco-footer ftco-section">
+        <div class="container">
+            <div class="row">
+                <div class="mouse">
+                    <a href="#" class="mouse-icon">
+                        <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                    </a>
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-md">
+                    <div class="ftco-footer-widget mb-4">
+                        <h2 class="ftco-heading-2">SFV - Veggies</h2>
+                        <p>Quality pruduce during dire times</p>
+                        <!-- <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                        </ul> -->
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="ftco-footer-widget mb-4">
+                        <h2 class="ftco-heading-2">Have a Question?</h2>
+                        <div class="block-23 mb-3">
+                            <ul>
+                                <li><span class="material-icons">
+                                        place
+                                    </span><span class="text">1122, SFV OAK</span></li>
+                                <li><a href="#"><span class="material-icons">
+                                            call
+                                        </span><span class="text">+91 9448032255</span></a></li>
+                                <li><a href="#"><span class="material-icons">
+                                            mail
+                                        </span><span class="text">kalpuraju1990@gmail.com</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+
+                    <p>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;<script>
+                            document.write(new Date().getFullYear());
+                        </script> All rights reserved | Made using <a href="https://colorlib.com"
+                            target="_blank">Colorlib</a> by Aneesh Melkot
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!-- loader -->
+    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
+            <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
+            <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10"
+                stroke="#F96D00" /></svg></div>
+
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.easing.1.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.stellar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+
+</html>
