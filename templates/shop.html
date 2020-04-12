@@ -127,7 +127,7 @@
                                     <h3><a href="#">{{ veg.name }}</a></h3>
                                     <div class="d-flex">
                                         <div class="pricing">
-                                            <p class="price"><span class="price-sale">₹{{ veg.price }}</span></p>
+                                            <p class="price"><span class="price-sale">₹{{ veg.price }}</span> per {{ veg.unit }}</p>
                                         </div>
                                     </div>
                                     {% for item in session['cart_items'] %}

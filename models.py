@@ -17,7 +17,10 @@ class Vegetable(db.Model):
     name = db.Column(db.String)
     price = db.Column(db.Float)
     image = db.Column(db.String(120))
+    unit = db.Column(db.String)
     onSale = db.Column(db.Boolean, default=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+
 
     order_details = db.relationship('OrderDetails', backref='ordered_item')
 
@@ -38,6 +41,7 @@ class Vegetable(db.Model):
             'name': self.name,
             'price': self.price,
             'image': self.image,
+            'unit': self.unit,
             'onSale': self.onSale
         }
     
@@ -61,14 +65,15 @@ class User(db.Model):
     password = db.Column(db.String)
     fname = db.Column(db.String)
     apt = db.Column(db.Integer)
+    apt_id = db.Column(db.Integer, db.ForeignKey('apartment.id'))
 
     orders = db.relationship('Order', backref='customer')
 
-    def __init__(self, fname, apt, phone, password):
-        self.fname = fname
-        self.apt = apt
-        self.phone = phone
-        self.password = password
+    # def __init__(self, fname, apt, phone, password):
+    #     self.fname = fname
+    #     self.apt = apt
+    #     self.phone = phone
+    #     self.password = password
 
     def insert(self):
         db.session.add(self)
@@ -87,10 +92,17 @@ class User(db.Model):
             'phone': self.phone,
             'fname': self.fname,
             'apt': self.apt,
+            'apt_id': self.apt_id
         }
 
     def __repr__(self):
         return f'<User {self.id} {self.fname}>'
+
+class Apartment(db.Model):
+    __tablename__ = 'apartment'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    resident = db.relationship('User', backref='apartment')
 
 class Stock(db.Model):
     __tablename__ = 'stock'
@@ -173,3 +185,9 @@ class Testimonial(db.Model):
         }
         })   
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+
+    vegetable = db.relationship('Vegetable', backref='category')
