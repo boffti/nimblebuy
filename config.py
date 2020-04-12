@@ -12,4 +12,4 @@ SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-DATABASE_URI = 'postgres://hauqoqqdyajftq:28ca4ee1d28fba345ffcc74d6fc72804955eb4957ecc4d8f4b9cd742f1267dd0@ec2-3-234-109-123.compute-1.amazonaws.com:5432/df5gld6qit5fva'
+DATABASE_URI = 'postgres://dfosuotlmrvmrc:3fa1cc4bfbe6a7a9575433324cb62be48e9d010f5b35304167e967fba615eb83@ec2-34-197-212-240.compute-1.amazonaws.com:5432/dbstsl3gvgms93'
