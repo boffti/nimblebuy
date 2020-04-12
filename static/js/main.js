@@ -378,7 +378,6 @@ AOS.init({
       vegetables = result;
     },
     error: (error) => {
-      alert('Unable to load questions. Please try your request again');
       return;
     }
   });
@@ -388,20 +387,5 @@ AOS.init({
 function addToCart() {
   console.log('clicked');
 }
-
-// $("a").click(function() {
-//   var veg_id = String(this.id);
-//   fetch('/cart/' + veg_id, {method: 'POST'});
-//   // vegetables.forEach(item => {
-//   //   if(item.id == veg_id)
-//   //     fetch('/cart/' + item.id), {method: 'POST'};
-//   // });
-// });
-
-
-
-
-
-
 
 })(jQuery);
