@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, Response, flash, redirect, ur
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import Form
-from models import db_init, Vegetable, User, Order, OrderDetails, Apartment
+from models import db_init, Vegetable, User, Order, OrderDetails, Apartment, Category, Stock, Testimonial
 import maya
 from shortid import ShortId
 from flask_login import LoginManager
@@ -20,13 +20,15 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
-admin = Admin(app, name='Veggies Admin', template_mode='bootstrap3')
+admin = Admin(app, name='NimbleBuy Admin', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Order, db.session))
 admin.add_view(ModelView(OrderDetails, db.session))
 admin.add_view(ModelView(Vegetable, db.session))
-
-
+admin.add_view(ModelView(Apartment, db.session))
+admin.add_view(ModelView(Category, db.session))
+admin.add_view(ModelView(Stock, db.session))
+admin.add_view(ModelView(Testimonial, db.session))
 
 # def login_required(j):
 #     @wraps
