@@ -41,7 +41,6 @@ def mergeDicts(dict1, dict2):
 @app.route('/')
 def index():
     if "user" in session:
-        
         response = [item.format() for item in Vegetable.query.all()]
         return render_template('shop.html', vegetables=response, date=date)
     else: return redirect(url_for('login_page'))
