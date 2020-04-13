@@ -95,6 +95,7 @@ def logout_user():
         session.pop('apt', None)
         session.pop('user', None)
         session.pop('cart_items', None)
+        session.pop('subtotal', None)
         return redirect(url_for('about_page'))
     else: return redirect(url_for('login_page'))
 
