@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_user import UserMixin
 
 database_path = 'sqlite:///sfv_veggies.db'
 
@@ -15,6 +16,7 @@ class Vegetable(db.Model):
     __tablename__ = 'vegetables'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    k_name = db.Column(db.String)
     price = db.Column(db.Float)
     image = db.Column(db.String(120))
     unit = db.Column(db.String)
@@ -39,6 +41,7 @@ class Vegetable(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'k_name':self.k_name,
             'price': self.price,
             'image': self.image,
             'unit': self.unit,
@@ -58,22 +61,20 @@ class Vegetable(db.Model):
     def __repr__(self):
         return f'<Vegetable {self.id} {self.name}>'
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String)
+    email_confirmed_at = db.Column(db.DateTime())
     phone = db.Column(db.String)
     password = db.Column(db.String)
     fname = db.Column(db.String)
-    apt = db.Column(db.Integer)
+    apt = db.Column(db.String)
     apt_id = db.Column(db.Integer, db.ForeignKey('apartment.id'))
+    active = db.Column('is_active', db.Boolean(), server_default='1')
 
     orders = db.relationship('Order', backref='customer')
-
-    # def __init__(self, fname, apt, phone, password):
-    #     self.fname = fname
-    #     self.apt = apt
-    #     self.phone = phone
-    #     self.password = password
+    roles = db.relationship('Role', secondary='user_roles')
 
     def insert(self):
         db.session.add(self)
@@ -89,6 +90,7 @@ class User(db.Model):
     def format(self):
         return {
             'id': self.id,
+            'email':self.email,
             'phone': self.phone,
             'fname': self.fname,
             'apt': self.apt,
@@ -98,11 +100,28 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.id} {self.fname}>'
 
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
+    # Define the UserRoles association table
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
+
 class Apartment(db.Model):
     __tablename__ = 'apartment'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     resident = db.relationship('User', backref='apartment')
+
+    def format(self):
+        return {
+            'apt_name': self.name
+        }
 
 class Stock(db.Model):
     __tablename__ = 'stock'
@@ -123,6 +142,7 @@ class Order(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     order_number = db.Column(db.String)
     order_date = db.Column(db.String)
+    order_total = db.Column(db.String)
 
     order_details = db.relationship('OrderDetails', backref='order')
 

@@ -4,17 +4,20 @@ from flask import Flask, render_template, request, Response, flash, redirect, ur
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import Form
-from models import db_init, Vegetable, User, Order, OrderDetails, Apartment, Category, Stock, Testimonial
+from models import db_init, Vegetable, User, Order, OrderDetails, Apartment, Category, Stock, Testimonial, Role, UserRoles
 import maya
 from shortid import ShortId
 from flask_login import LoginManager, UserMixin, current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_user import roles_required, UserManager, current_user
+from flask_babelex import Babel
 
 app = Flask(__name__)
 db = db_init(app)
 app.secret_key = 'abcd1234567890'
 date = maya.now().add(days=3).slang_date()
+babel = Babel(app)
 sid = ShortId()
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -29,14 +32,15 @@ admin.add_view(ModelView(Apartment, db.session))
 admin.add_view(ModelView(Category, db.session))
 admin.add_view(ModelView(Stock, db.session))
 admin.add_view(ModelView(Testimonial, db.session))
+admin.add_view(ModelView(Role, db.session))
+admin.add_view(ModelView(UserRoles, db.session))
+
+
+user_manager = UserManager(app, db, User)
 
 class MuModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated
-
-# def login_required(j):
-#     @wraps
-#     def wrap(*args, **kwargs):
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -48,25 +52,82 @@ def mergeDicts(dict1, dict2):
     elif isinstance(dict1, dict) and isinstance(dict2, dict):
         return dict(list(dict1.items())+ list(dict2.items))
 
+# LOGIN / REGISTER ------------------------------------------------------------------------------------------------------
+
+# GET Login page route
+@app.route('/login', methods=['GET'])
+def login_page():
+    if 'user' not in session:
+        return render_template('login.html')
+    else : return redirect(url_for('about_page'))
+
+# POST Lofin user route
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.form.to_dict()
+    try:
+        user = User.query.filter_by(email=data['email']).first()
+        print(user.format())
+        if user.password == data['password']:
+            session['user'] = user.format()
+            return redirect(url_for('index'))
+    except Exception as e:
+        print(f'Error ==> {e}')
+        return render_template('login.html')
+
+# POST Register new user route
+@app.route('/register', methods=['POST'])
+def login_register():
+    data = request.form.to_dict()
+    apt_name = data['apt_name']
+    apt = Apartment.query.filter(Apartment.name.ilike(f'%{apt_name}%')).first()
+    user = User(email=data['email'], apt=data['apt'], fname=data['name'], phone=data['phone'], password=data['password'], apartment=apt)
+    user.insert()
+    if 'apt' in data:
+        session['user'] = user.format()
+        return redirect(url_for('about_page'))
+    else: return redirect(url_for('login_page', data='Please Fill Everything'))
+
+# Logout user route
+@app.route('/logout')
+def logout_user():
+    if 'user' in session:
+        session.pop('apt', None)
+        session.pop('user', None)
+        session.pop('cart_items', None)
+        return redirect(url_for('about_page'))
+    else: return redirect(url_for('login_page'))
+
+# -----------------------------------------------------------------------------------------------------------------------
+    
+
+# HOME / ABOUT ------------------------------------------------------------------------
+
+# Home route
 @app.route('/')
 def index():
     if "user" in session:
         response = [item.format() for item in Vegetable.query.all()]
         return render_template('shop.html', vegetables=response, date=date)
     else: return redirect(url_for('login_page'))
-    
 
+# Endpoint to get all vegetables as JSON
 @app.route('/vegetables', methods=['GET'])
 def get_veggies():
     response = [item.format() for item in Vegetable.query.all()]
 
     return jsonify(response)
 
+# About page route
 @app.route('/about')
 def about_page():
     return render_template('about.html', date=date)
 
+# -----------------------------------------------------------------------------
 
+# CART / CHECKOUT --------------------------------------------------------------------------
+
+# GET Cart Route
 @app.route('/cart', methods=['GET'])
 def checkout():
     if 'user' in session:
@@ -78,6 +139,7 @@ def checkout():
         else: return redirect(request.referrer)
     else: return redirect(url_for('login_page'))
 
+# POST Add to Cart
 @app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
     try:
@@ -99,6 +161,7 @@ def add_to_cart(product_id):
     finally:
         return redirect(request.referrer)
 
+# POST Delete Cart Item
 @app.route('/cart/delete/<int:product_id>', methods=['POST'])
 def delete_item_in_cart(product_id):
     if 'user' not in session and 'cart_item' not in session and len(session['cart_items'] <=0):
@@ -114,47 +177,7 @@ def delete_item_in_cart(product_id):
         return redirect(url_for('checkout'))
         print(f'Error ==> {e}')
 
-
-@app.route('/login', methods=['GET'])
-def login_page():
-    if 'user' not in session:
-        return render_template('login.html')
-
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.form.to_dict()
-    try:
-        user = User.query.filter_by(apt=data['apt']).first()
-        print(user.format())
-        if user.password == data['password']:
-            session['user'] = user.format()
-            return redirect(url_for('index'))
-    except Exception as e:
-        print(f'Error ==> {e}')
-        return render_template('login.html')
-
-@app.route('/register', methods=['POST'])
-def login_register():
-    data = request.form.to_dict()
-    apt_name = data['apt_name']
-    apt = Apartment.query.filter(Apartment.name.ilike(f'%{apt_name}%')).first()
-    user = User(apt=data['apt'], fname=data['name'], phone=data['phone'], password=data['password'], apartment=apt)
-    user.insert()
-    if 'apt' in data:
-        session['user'] = user.format()
-        return redirect(url_for('about_page'))
-    else: return redirect(url_for('login_page', data='Please Fill Everything'))
-
-@app.route('/logout')
-def logout_user():
-    if 'user' in session:
-        session.pop('apt', None)
-        session.pop('user', None)
-        session.pop('cart_items', None)
-        return redirect(url_for('about_page'))
-    else: return redirect(url_for('login_page'))
-    
-
+# UPDATE Cart Item
 @app.route('/updatecart/<int:product_id>')
 def update_cart(product_id):
     if 'cart_items' not in session and len(session['cart_items']) <= 0:
@@ -172,43 +195,73 @@ def update_cart(product_id):
             print(f'Error ==> {e}')
             return redirect(url_for('checkout'))
 
-@app.route('/confirmation')
-def order_confirm():
-    if 'user' in session:
-        if 'cart_items' in session:
-            subtotal = 0
-            for product in session['cart_items']:
-                subtotal += float(product['price']) * float(product['qty'])
-            return render_template('confirmation.html', subtotal=subtotal)
-
+# POST Create the order
 @app.route('/create-order', methods=['POST'])
 def create_order():
     try:
-        customer = User.query.get(int(session['user']['id']))
-        order = Order(customer=customer, order_number=sid.generate(), order_date=date)
-        order.insert()
         subtotal = 0
         for product in session['cart_items']:
             subtotal += float(product['price']) * float(product['qty'])
+        session['subtotal'] = subtotal
+        customer = User.query.get(int(session['user']['id']))
+        order = Order(customer=customer, order_number=sid.generate(), order_date=date, order_total=subtotal)
+        order.insert()
         for product in session['cart_items']:
             ordered_item = Vegetable.query.get(int(product['id']))
             order_details = OrderDetails(ordered_item=ordered_item, order=order, price=product['price'], qty=product['qty'], total=subtotal)
             order_details.insert()
-        # session.pop('cart_items', None)
-        return redirect(url_for('about_page', isOrderSuccess=True))
+        session.pop('cart_items', None)
+        return redirect(url_for('order_confirm', isOrderSuccess=True))
 
     except Exception as e:
         print(f'Error ==> {e}')
         return 'Failed'
 
-@app.route('/session')
-def get_session():
-    return session['user']
+# Order Confirmation page route
+@app.route('/confirmation')
+def order_confirm():
+    if 'user' in session:
+        if 'subtotal' in session:
+            return render_template('confirmation.html')
+        else : return redirect(request.referrer)
 
-def Merge(dict1, dict2): 
-    return(dict2.update(dict1)) 
+#  ----------------------------------------------------------------------------------------------------------------------------------------------
 
+# ADMIN -----------------------------------------------------------------------------------------------------------------------------------------
+
+def get_stock():
+    try:
+        inventory = [{**(item.format()), **({ 'stock' : 0 })} for item in Vegetable.query.all()]
+        order_details = OrderDetails.query.all()
+        items_ordered = [detail.format() for detail in order_details]
+        for product in inventory:
+            for item in items_ordered:
+                if product['id'] == item['product_id']:
+                    product['stock'] = product.get('stock') + float(item['qty'])
+        return inventory
+    except Exception as e:
+        print(f'Error ==> {e}')
+        return 'Nothing'
+
+@app.route('/stock')
+# @roles_required('Admin')
+def getInventory():
+    try:
+        inventory = [{**(item.format()), **({ 'stock' : 0 })} for item in Vegetable.query.all()]
+        order_details = OrderDetails.query.all()
+        items_ordered = [detail.format() for detail in order_details]
+        for product in inventory:
+            for item in items_ordered:
+                if product['id'] == item['product_id']:
+                    product['stock'] = product.get('stock') + float(item['qty'])
+        return jsonify(inventory)
+    except Exception as e:
+        print(f'Error ==> {e}')
+        return 'Nothing'
+
+# GET Admin page route
 @app.route('/admin_orders')
+# @roles_required('Admin')
 def sample_route():
     response = []
     try:
@@ -221,23 +274,18 @@ def sample_route():
                 response.append({
                     'customer': {**(user.format()), **(user.apartment.format())},
                     'order': [order.format() for order in user.orders],
-                    'order_details': items_ordered
+                    'order_details': items_ordered,
+                    'order_total': items_ordered[0].get('total', 0)
                 })
             else: continue
-                # response.append({
-                #     'customer': {**(user.format()), **(user.apartment.format())},
-                #     'order': None,
-                #     'order_details': None
-                # })
-        return render_template('admin_orders.html', data=response)
+        return render_template('admin_orders.html', data=response, stock=get_stock())
         # return jsonify(response)
 
     except Exception as e:
         print(f'error ==> {e}')
         return 'Nothing'
-    # return render_template('admin_orders.html')
     
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run()
