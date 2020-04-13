@@ -114,7 +114,7 @@
                         <p><a href="{{ url_for('index') }}" class="btn btn-primary">Shop now</a></p>
                         {% else %}
                         <p>Login or Register now and start purchasing!</p>
-                        <p><a href="{{ url_for('index') }}" class="btn btn-secondary">Login/Register</a></p>
+                        <p><a href="{{ url_for('login_page') }}" class="btn btn-secondary">Login/Register</a></p>
                         {% endif %}
                         <p>Order now and get your veggies on <strong>{{ date }}</strong></p>
                         {% if isOrderSuccess %}
