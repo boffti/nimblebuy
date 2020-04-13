@@ -85,37 +85,52 @@
                     </div>
                     <div class="col-lg-12">
                         <table class="table table-bordered" style="border-collapse:collapse;">
-                            <thead>
+                            <thead class="sticky-top">
                                 <tr>
                                     <th>No.</th>
-                                    <th>Date</th>
-                                    <th>Order No</th>
-                                    <th>Order Items</th>
-                                    <th>Order Total</th>
+                                    <th>Name</th>
+                                    <th>Apt Name</th>
+                                    <th>Apt Num</th>
+                                    <th>Phone</th>
+                                    <th>Order total</th>
                                 </tr>
                             </thead>
                             <tbody>
+
+                                {% for user in data %}
                                 <tr colspan="6" data-toggle="collapse" data-target="#demo1" class="accordion-toggle">
-                                    <td>1</td>
-                                    <td>12 Jan 2018</td>
-                                    <td>HKG35687</td>
-                                    <td> 6</td>
-                                    <td>₹150.00</td>
+                                    <td>{{loop.index}}</td>
+                                    <td>{{user.customer.fname}}</td>
+                                    <td>{{user.customer.apt_name}}</td>
+                                    <td>{{user.customer.apt}}</td>
+                                    <td>{{user.customer.phone}}</td>
+                                    {% if user.order %}
+                                    {% set detail = user.order_details.pop(1) %}
+                                    <td>₹{{ detail.total }}</td>
+                                    {% else %}
+                                    <td>-</td>
+                                    {% endif %}
                                 </tr>
                                 <tr class="p">
                                     <td colspan="6" class="hiddenRow">
-                                        <div class="accordian-body collapse p-3" id="demo1">
-                                            <p>No : <span>1</span></p>
-                                            <p>Date : <span>12 Jan 2018</span> </p>
-                                            <p>Description : <span>Good</span> </p>
-                                            <p>Credit : <span>$150.00</span> </p>
-                                            <p>Debit : <span></span></p>
-                                            <p>Balance : <span>$150.00</span></p>
+                                        <div class="accordian-body  p-3" id="demo1">
+                                            {% if user.order %}
+                                            <div class="row">
+                                                {% for item in user.order_details %}
+                                            {% set subtotal = item.qty|float * item.price|float %}
+                                            <div class="col-sm-2">
+                                            <p><span>{{ item.qty }} {{ item.unit }}</span> : {{ item.name }} : <span>₹{{ subtotal }}</span></p>
+                                            </div>
+                                            {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            <p><span>Nothing Ordered</span></p>
+                                            {% endif %}
                                         </div>
                                     </td>
                                 </tr>
         
-        
+        {% endfor %}
         
                             </tbody>
                         </table>

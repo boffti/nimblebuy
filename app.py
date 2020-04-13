@@ -7,7 +7,7 @@ from flask_wtf import Form
 from models import db_init, Vegetable, User, Order, OrderDetails, Apartment, Category, Stock, Testimonial
 import maya
 from shortid import ShortId
-from flask_login import LoginManager
+from flask_login import LoginManager, UserMixin, current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
@@ -30,9 +30,17 @@ admin.add_view(ModelView(Category, db.session))
 admin.add_view(ModelView(Stock, db.session))
 admin.add_view(ModelView(Testimonial, db.session))
 
+class MuModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
 # def login_required(j):
 #     @wraps
 #     def wrap(*args, **kwargs):
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 def mergeDicts(dict1, dict2):
     if isinstance(dict1, list) and isinstance(dict2, list):
@@ -119,9 +127,7 @@ def login():
         user = User.query.filter_by(apt=data['apt']).first()
         print(user.format())
         if user.password == data['password']:
-            # session['apt'] = data['apt']
             session['user'] = user.format()
-            print(session['user'])
             return redirect(url_for('index'))
     except Exception as e:
         print(f'Error ==> {e}')
@@ -133,7 +139,6 @@ def login_register():
     apt_name = data['apt_name']
     apt = Apartment.query.filter(Apartment.name.ilike(f'%{apt_name}%')).first()
     user = User(apt=data['apt'], fname=data['name'], phone=data['phone'], password=data['password'], apartment=apt)
-    # user.apt_id = apt
     user.insert()
     if 'apt' in data:
         session['user'] = user.format()
@@ -167,6 +172,15 @@ def update_cart(product_id):
             print(f'Error ==> {e}')
             return redirect(url_for('checkout'))
 
+@app.route('/confirmation')
+def order_confirm():
+    if 'user' in session:
+        if 'cart_items' in session:
+            subtotal = 0
+            for product in session['cart_items']:
+                subtotal += float(product['price']) * float(product['qty'])
+            return render_template('confirmation.html', subtotal=subtotal)
+
 @app.route('/create-order', methods=['POST'])
 def create_order():
     try:
@@ -180,7 +194,7 @@ def create_order():
             ordered_item = Vegetable.query.get(int(product['id']))
             order_details = OrderDetails(ordered_item=ordered_item, order=order, price=product['price'], qty=product['qty'], total=subtotal)
             order_details.insert()
-        session.pop('cart_items', None)
+        # session.pop('cart_items', None)
         return redirect(url_for('about_page', isOrderSuccess=True))
 
     except Exception as e:
@@ -191,14 +205,32 @@ def create_order():
 def get_session():
     return session['user']
 
+def Merge(dict1, dict2): 
+    return(dict2.update(dict1)) 
+
 @app.route('/admin_orders')
 def sample_route():
+    response = []
     try:
-        # orders = Order.query.all()
-        # order_details = [order.format() for order in orders]
-        order_details = db.session.query(User).outerjoin(Order, User.id == Order.customer_id).outerjoin(OrderDetails, ).group_by(User.apt).all()
-        print(order_details)
-        return 'Done'
+        users = User.query.all()
+        for user in users:
+            orders = user.orders
+            if len(orders) > 0:
+                order_details = [order.order_details for order in orders]
+                items_ordered = [{**(detail.format()), **(Vegetable.query.get(detail.product_id).format())} for detail in order_details[0]]
+                response.append({
+                    'customer': {**(user.format()), **(user.apartment.format())},
+                    'order': [order.format() for order in user.orders],
+                    'order_details': items_ordered
+                })
+            else: continue
+                # response.append({
+                #     'customer': {**(user.format()), **(user.apartment.format())},
+                #     'order': None,
+                #     'order_details': None
+                # })
+        return render_template('admin_orders.html', data=response)
+        # return jsonify(response)
 
     except Exception as e:
         print(f'error ==> {e}')
