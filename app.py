@@ -229,6 +229,12 @@ def order_confirm():
 
 # ADMIN -----------------------------------------------------------------------------------------------------------------------------------------
 
+def import_db():
+    import data
+    for item in data.data:
+        veg = Vegetable(category_id=item['category_id'], image=item['image'], k_name=item['k_name'], name=item['name'], onSale=bool(item['onSale']), price=item['price'], unit=item['unit'])
+        veg.insert()
+
 def get_stock():
     try:
         inventory = [{**(item.format()), **({ 'stock' : 0 })} for item in Vegetable.query.all()]
